@@ -20,9 +20,38 @@ export const addTaks = async (req: Request, res: Response) => {
 }
 
 export const updateTask = async (req: Request, res: Response) => {
+    let id: string = req.params.id;
 
+    let task = await Tasks.findByPk(id);
+    if (task) {
+        if (req.body.title) {
+            task.title = req.body.title;
+        }
+        if (req.body.done) {
+            switch (req.body.done.toLowerCase()) {
+                case 'true':
+                case '1':
+                    task.done = true;
+                    break;
+                case 'false':
+                case '0':
+                    task.done = false;
+                    break;
+            }
+        }
+        await task.save();
+        res.json({ item: task });
+    } else {
+        res.json({ error: 'Item não encontrado!' });
+    }
 }
 
 export const deleteTask = async (req: Request, res: Response) => {
+    let id: string = req.params.id;
 
+    let task = await Tasks.findByPk(id);
+    if (task) {
+        await task.destroy();
+    } 
+    res.json({});
 }
